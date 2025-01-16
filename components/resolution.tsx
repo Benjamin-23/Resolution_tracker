@@ -25,7 +25,13 @@ export default function Resolution() {
     fetchResolutions();
   }, []);
   const fetchResolutions = async () => {
-    const { data, error } = await supabase.from("resolution").select("*");
+    const {
+      data: { user },
+    } = await supabase.auth.getUser();
+    const { data, error } = await supabase
+      .from("resolution")
+      .select("*")
+      .eq("user_id", user?.id);
     if (error) {
       console.error("Error fetching resolutions", error);
     } else {
@@ -34,6 +40,9 @@ export default function Resolution() {
   };
   const addResolution = async () => {
     if (newResolution.trim()) {
+      const {
+        data: { user },
+      } = await supabase.auth.getUser();
       await supabase.from("resolution").insert([
         {
           name: newResolution,
@@ -41,11 +50,12 @@ export default function Resolution() {
           progress: 0,
           likes: 0,
           coins: 0,
+          user_id: user?.id,
         },
       ]);
+      fetchResolutions();
       setNewResolution("");
     }
-    console.log("Resolution added", resolutions);
   };
 
   const updateProgress = async (id: number, increment: number) => {
@@ -197,19 +207,40 @@ export default function Resolution() {
                           +10%
                         </Button>
                       </div>
+                      {/* 50% */}
+                      <div className="flex gap-2">
+                        <Button
+                          size="sm"
+                          variant="outline"
+                          onClick={() => updateProgress(resolution.id, 50)}
+                        >
+                          +50%
+                        </Button>
+                      </div>
                       <span className="text-sm text-gray-500">
                         Progress: {resolution.progress}%
                       </span>
                     </div>
                   </div>
-                  <div className="flex justify-end mt-2 ">
-                    <Button
-                      variant="outline"
-                      size="sm"
-                      onClick={() => deleteResolution(resolution.id)}
-                    >
-                      Delete
-                    </Button>
+                  <div className="flex justify-between pt-2">
+                    <div className="flex gap-2">
+                      <Button
+                        size="sm"
+                        variant="outline"
+                        onClick={() => updateProgress(resolution.id, 100)}
+                      >
+                        Done
+                      </Button>
+                    </div>
+                    <div className="flex justify-end mt-2 ">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => deleteResolution(resolution.id)}
+                      >
+                        Delete
+                      </Button>
+                    </div>
                   </div>
                 </Card>
               ))}
