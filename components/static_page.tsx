@@ -35,15 +35,22 @@ export default function StaticPage() {
   const fetchUsers = async (): Promise<void> => {
     const supabase = createClient();
     try {
-      const { data: userData, error: userError } = await supabase
-        .from("auth_user")
-        .select("id,email");
-      if (userError) throw userError;
-      setUsers(userData || []);
+      const {
+        data: { users },
+        error,
+      } = await supabase.auth.admin.listUsers({
+        page: 1, // Page number of the results
+        perPage: 1000,
+      });
+      console.log(users, "users");
+      if (error) throw error;
+      setUsers(users || []);
     } catch (error) {
       console.error("Error fetching users:", error);
+      setUsers([]);
     }
   };
+
   useEffect(() => {
     // Fetch resolutions from API
     fetchUsers();
@@ -81,11 +88,11 @@ export default function StaticPage() {
         <Card key={resolution.id}>
           <CardHeader>
             <CardTitle>{resolution.name}</CardTitle>
-            {/* {users.map((user: any) =>
+            {users.map((user: any) =>
               user.id === resolution.user_id ? (
                 <p key={user.id}>Email: {user.email}</p>
               ) : null,
-            )}   */}
+            )}
             <p>By: {resolution.user_id}</p>
           </CardHeader>
           <CardContent>
