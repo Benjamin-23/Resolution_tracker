@@ -26,8 +26,8 @@ export default function Nav() {
 
       <div
         className={`${
-          isOpen ? "flex w-fit" : "hidden"
-        } md:flex absolute md:relative top-full left-0 w-full md:w-auto bg-black md:bg-transparent shadow-lg md:shadow-none flex-col md:flex-row gap-4`}
+          isOpen ? "flex w-max" : "hidden"
+        } md:flex absolute rounded-md mt-2   md:relative z-10 top-full left-0 w-full md:w-full bg-gray-800 md:bg-transparent shadow-lg md:shadow-none flex-col md:flex-row gap-4`}
       >
         <Link
           className="hover:text-green-500 hover:underline p-2 md:p-0"
