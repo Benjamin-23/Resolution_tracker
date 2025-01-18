@@ -132,17 +132,16 @@ export default function Resolution() {
 
   return (
     <div>
-      {/* <h1>Protected Page</h1> */}
-      <div className="max-w-4xl mx-auto p-6">
+      <div className="max-w-4xl mx-auto p-2 sm:p-6">
         <Card className="mb-8">
           <CardHeader>
-            <CardTitle className="flex items-center gap-2">
-              <Sparkles className="w-6 h-6 text-yellow-500" />
+            <CardTitle className="flex items-center gap-2 text-base sm:text-lg md:text-xl">
+              <Sparkles className="w-4 h-4 sm:w-6 sm:h-6 text-yellow-500" />
               Resolution Revolution Challenge 2025
             </CardTitle>
           </CardHeader>
           <CardContent>
-            <div className="flex gap-4 mb-4">
+            <div className="flex flex-col sm:flex-row gap-2 sm:gap-4 mb-4">
               <Input
                 value={newResolution}
                 onChange={(e) => setNewResolution(e.target.value)}
@@ -150,7 +149,7 @@ export default function Resolution() {
                 className="flex-grow"
               />
               <select
-                className="px-3 py-2 border rounded-md"
+                className="px-3 py-2 border rounded-md w-full sm:w-auto"
                 value={selectedCategory}
                 onChange={(e) => setSelectedCategory(e.target.value)}
               >
@@ -160,24 +159,29 @@ export default function Resolution() {
                   </option>
                 ))}
               </select>
-              <Button onClick={addResolution}>Add Resolution</Button>
+              <Button onClick={addResolution} className="w-full sm:w-auto">
+                Add Resolution
+              </Button>
             </div>
 
             <div className="space-y-4">
               {resolutions.map((resolution) => (
-                <Card key={resolution.id} className="p-4">
-                  <div className="flex justify-between items-start mb-2">
+                <Card key={resolution.id} className="p-2 sm:p-4">
+                  <div className="flex flex-col sm:flex-row justify-between items-start mb-2 gap-2">
                     <div>
-                      <h3 className="font-medium text-lg">{resolution.name}</h3>
+                      <h3 className="font-medium text-base sm:text-lg">
+                        {resolution.name}
+                      </h3>
                       <Badge variant="secondary" className="mt-1">
                         {resolution.category}
                       </Badge>
                     </div>
-                    <div className="flex gap-2">
+                    <div className="flex gap-2 w-full sm:w-auto">
                       <Button
                         variant="outline"
                         size="sm"
                         onClick={() => incrementLikes(resolution.id)}
+                        className="flex-1 sm:flex-none"
                       >
                         <Heart className="w-4 h-4 mr-1" />
                         {resolution.likes}
@@ -186,57 +190,65 @@ export default function Resolution() {
                         variant="outline"
                         size="sm"
                         onClick={() => incrementInspired(resolution.id)}
+                        className="flex-1 sm:flex-none"
                       >
                         <Trophy className="w-4 h-4 mr-1" />
                         {resolution.coins}
                       </Button>
-                      <Button variant="outline" size="sm">
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        className="flex-1 sm:flex-none"
+                      >
                         <Share2 className="w-4 h-4" />
                       </Button>
                     </div>
                   </div>
                   <div className="space-y-2">
                     <Progress value={resolution.progress} className="w-full" />
-                    <div className="flex justify-between">
+                    <div className="flex flex-col sm:flex-row justify-between gap-2">
                       <div className="flex gap-2">
                         <Button
                           size="sm"
                           variant="outline"
                           onClick={() => updateProgress(resolution.id, 10)}
+                          className="flex-1"
                         >
                           +10%
                         </Button>
                       </div>
-                      {/* 50% */}
                       <div className="flex gap-2">
                         <Button
                           size="sm"
                           variant="outline"
                           onClick={() => updateProgress(resolution.id, 50)}
+                          className="flex-1"
                         >
                           +50%
                         </Button>
                       </div>
-                      <span className="text-sm text-gray-500">
+                      <span className="text-sm text-gray-500 text-center sm:text-right">
                         Progress: {resolution.progress}%
                       </span>
                     </div>
                   </div>
-                  <div className="flex justify-between pt-2">
+                  <div className="flex flex-col sm:flex-row justify-between pt-2 gap-2">
                     <div className="flex gap-2">
                       <Button
                         size="sm"
                         variant="outline"
                         onClick={() => updateProgress(resolution.id, 100)}
+                        className="flex-1"
                       >
                         Done
                       </Button>
                     </div>
-                    <div className="flex justify-end mt-2 ">
+                    <div className="flex justify-end">
                       <Button
                         variant="outline"
                         size="sm"
                         onClick={() => deleteResolution(resolution.id)}
+                        className="flex-1 sm:flex-none"
                       >
                         Delete
                       </Button>

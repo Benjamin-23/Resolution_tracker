@@ -4,6 +4,7 @@ import Link from "next/link";
 import { Badge } from "./ui/badge";
 import { Button } from "./ui/button";
 import { createClient } from "@/utils/supabase/server";
+import Nav from "./nav";
 
 export default async function AuthButton() {
   const supabase = await createClient();
@@ -49,13 +50,16 @@ export default async function AuthButton() {
     );
   }
   return user ? (
-    <div className="flex items-center gap-4">
-      Hey, {user.email}
-      <form action={signOutAction}>
-        <Button type="submit" variant={"outline"}>
-          Sign out
-        </Button>
-      </form>
+    <div className="flex items-center gap-4 justify-between w-full container">
+      <Nav />
+      <div className=" flex justify-between items-center gap-4">
+        Hey, {user.email}
+        <form action={signOutAction}>
+          <Button type="submit" variant={"outline"}>
+            Sign out
+          </Button>
+        </form>
+      </div>
     </div>
   ) : (
     <div className="flex gap-2">

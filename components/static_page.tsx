@@ -33,24 +33,14 @@ export default function StaticPage() {
     }
   };
   const fetchUsers = async (): Promise<void> => {
-    const supabase = createClient();
     try {
-      const {
-        data: { users },
-        error,
-      } = await supabase.auth.admin.listUsers({
-        page: 1, // Page number of the results
-        perPage: 1000,
-      });
-      console.log(users, "users");
-      if (error) throw error;
-      setUsers(users || []);
+      const response = await fetch("/api/users");
+      const data = await response.json();
+      setUsers(data.users);
     } catch (error) {
       console.error("Error fetching users:", error);
-      setUsers([]);
     }
   };
-
   useEffect(() => {
     // Fetch resolutions from API
     fetchUsers();
@@ -59,27 +49,128 @@ export default function StaticPage() {
     });
   }, []);
 
-  const handleRating = (resolutionId: string, rating: number) => {
+  const handleRating = async (resolutionId: string, rating: number) => {
+    const supabase = createClient();
     setUserRating(rating);
-    // API call to save rating
+
+    try {
+      // Save the user's rating
+      await supabase.from("ratings").insert({
+        resolution_id: resolutionId,
+        user_email: users[0]?.email,
+        rating: rating,
+      });
+
+      // Get all ratings for this resolution
+      const { data: ratingData, error } = await supabase
+        .from("ratings")
+        .select("rating")
+        .eq("resolution_id", resolutionId);
+
+      if (error) throw error;
+
+      // Calculate average rating
+      if (ratingData && ratingData.length > 0) {
+        const totalRating = ratingData.reduce(
+          (sum, curr) => sum + curr.rating,
+          0,
+        );
+        const averageRating = totalRating / ratingData.length;
+
+        // Update resolution with new average rating
+        await supabase
+          .from("resolution")
+          .update({ average_rating: averageRating })
+          .eq("id", resolutionId);
+      }
+    } catch (error) {
+      console.error("Error handling rating:", error);
+    }
   };
 
-  const handleLike = (resolutionId: string) => {
-    setLikes((prev: Likes) => ({
-      ...prev,
-      [resolutionId]: !prev[resolutionId],
-    }));
-    // API call to save like
-    setResolutions((prevResolutions) =>
-      prevResolutions.map((res) =>
-        res.id === resolutionId
-          ? {
-              ...res,
-              likes: likes[resolutionId] ? res.likes - 1 : res.likes + 1,
-            }
-          : res,
-      ),
-    );
+  const handleLike = async (resolutionId: string) => {
+    const supabase = createClient();
+
+    // Check if user has already liked this resolution
+    const { data: existingLike } = await supabase
+      .from("likes")
+      .select("*")
+      .eq("resolution_id", resolutionId)
+      .eq("user_email", users[0]?.email)
+      .single();
+
+    if (existingLike) {
+      // Unlike - delete the like record
+      await supabase
+        .from("likes")
+        .delete()
+        .eq("resolution_id", resolutionId)
+        .eq("user_email", users[0]?.email);
+
+      setLikes((prev: Likes) => ({
+        ...prev,
+        [resolutionId]: false,
+      }));
+
+      try {
+        const { error } = await supabase
+          .from("resolution")
+          .update({
+            likes: resolutions.find((r) => r.id === resolutionId)!.likes - 1,
+          })
+          .eq("id", resolutionId);
+
+        if (error) throw error;
+
+        setResolutions((prevResolutions) =>
+          prevResolutions.map((res) =>
+            res.id === resolutionId
+              ? {
+                  ...res,
+                  likes: res.likes - 1,
+                }
+              : res,
+          ),
+        );
+      } catch (error) {
+        console.error("Error updating like:", error);
+      }
+    } else {
+      // Like - insert new like record
+      await supabase.from("likes").insert({
+        resolution_id: resolutionId,
+        user_email: users[0]?.email,
+      });
+
+      setLikes((prev: Likes) => ({
+        ...prev,
+        [resolutionId]: true,
+      }));
+
+      try {
+        const { error } = await supabase
+          .from("resolution")
+          .update({
+            likes: resolutions.find((r) => r.id === resolutionId)!.likes + 1,
+          })
+          .eq("id", resolutionId);
+
+        if (error) throw error;
+
+        setResolutions((prevResolutions) =>
+          prevResolutions.map((res) =>
+            res.id === resolutionId
+              ? {
+                  ...res,
+                  likes: res.likes + 1,
+                }
+              : res,
+          ),
+        );
+      } catch (error) {
+        console.error("Error updating like:", error);
+      }
+    }
   };
 
   return (
@@ -93,7 +184,6 @@ export default function StaticPage() {
                 <p key={user.id}>Email: {user.email}</p>
               ) : null,
             )}
-            <p>By: {resolution.user_id}</p>
           </CardHeader>
           <CardContent>
             <div key={resolution.id} className="resolution-card">
@@ -105,7 +195,10 @@ export default function StaticPage() {
                     <span
                       key={star}
                       onClick={() => handleRating(resolution.id, star)}
-                      className={star <= userRating ? "star active" : "star"}
+                      className={`star cursor-pointer ${star <= userRating ? "active" : ""}`}
+                      role="button"
+                      tabIndex={0}
+                      aria-label={`Rate ${star} stars`}
                     >
                       ⭐
                     </span>

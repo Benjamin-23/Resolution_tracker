@@ -1,103 +1,49 @@
-<a href="https://demo-nextjs-with-supabase.vercel.app/">
-  <img alt="Next.js and Supabase Starter Kit - the fastest way to build apps with Next.js and Supabase" src="https://demo-nextjs-with-supabase.vercel.app/opengraph-image.png">
-  <h1 align="center">Next.js and Supabase Starter Kit</h1>
-</a>
-
-<p align="center">A powerful starter template combining Next.js and Supabase for building modern web applications</p>
-
-<p align="center">
-  <a href="#features"><strong>Features</strong></a> ·
-  <a href="#demo"><strong>Demo</strong></a> ·
-  <a href="#prerequisites"><strong>Prerequisites</strong></a> ·
-  <a href="#getting-started"><strong>Getting Started</strong></a> ·
-  <a href="#deployment"><strong>Deployment</strong></a> ·
-  <a href="#support"><strong>Support</strong></a>
-</p>
-<br/>
-
-## About The Project
-
-This starter kit provides a production-ready foundation for building full-stack applications using Next.js and Supabase. It includes authentication, real-time data synchronization, and a modern UI toolkit out of the box.
+# Resolution Project
+A versatile project for setting and tracking your personal goals and resolutions.
+The Resolution Project is more than just a goal-tracking application - it's a comprehensive platform designed to help individuals succeed in their personal development journey. This innovative solution addresses the common challenge of maintaining long-term commitment to resolutions through several key features.
+Users can engage with others' resolutions through a dynamic rating and feedback system. The built-in rating feature allows community members to score resolutions based on creativity, ambition, and progress, providing constructive motivation. A "like" system similar to social media platforms enables quick encouragement and support. Top-rated resolutions are featured on community leaderboards, inspiring others and fostering healthy competition. This peer validation creates additional accountability and motivation while building meaningful connections between users with aligned goals.
+Our smart notification system uses behavioral psychology principles to keep users engaged and motivated. The platform analyzes patterns in user behavior to provide personalized encouragement and reminders at optimal times. The milestone tracking feature breaks down larger goals into manageable chunks, making progress feel more achievable.
+The social aspect of the platform creates accountability through community support. Users can join groups with similar goals, participate in challenges, and celebrate wins together. The gamification elements, including achievement badges and progress streaks, tap into natural motivational drivers.
+Data visualization tools provide valuable insights into resolution patterns, helping users understand their productivity peaks and areas for improvement. The flexible goal-setting framework accommodates various resolution types - from fitness and career goals to personal development and learning objectives.
+Privacy is a key consideration, with users having full control over what they share publicly. The platform also integrates with popular calendar and task management tools for seamless incorporation into daily routines.
+Regular progress reports and success metrics help users stay informed about their journey, while the AI-powered suggestion engine offers personalized recommendations for staying on track. Whether it's quitting a habit, learning a new skill, or improving relationships, the Resolution Project provides the structure and support needed for lasting change.
 
 ## Features
+- Create custom resolutions and track your progress
+- Set deadlines and milestones
+- Get reminders and notifications
+- View progress statistics and insights
+- Share achievements with friends
 
-- 🚀 **Full Stack Solution** - Seamlessly works across the entire Next.js stack including App Router, Pages Router, Middleware, Client and Server components
-- 🔐 **Authentication Ready** - Includes Supabase Auth with cookie-based session management
-- 💅 **Modern Styling** - Pre-configured with Tailwind CSS for utility-first styling
-- 🎨 **UI Components** - Beautiful, accessible components powered by shadcn/ui
-- 🔄 **Real-time Data** - Built-in real-time capabilities with Supabase
-- 📱 **Responsive Design** - Mobile-first approach ensuring great UX across all devices
-- 🚀 **One-Click Deploy** - Easy deployment to Vercel with environment variables auto-configuration
+## Installation
+1. Clone the repository
+```bash
+git clone https://github.com/username/resolution-project.git
+```
 
-## Demo
+2. Install dependencies
+```bash
+cd resolution-project
+npm install
+```
 
-Experience the starter kit in action at [demo-nextjs-with-supabase.vercel.app](https://demo-nextjs-with-supabase.vercel.app/).
+3. Configure environment variables by copying `.env.example` to `.env` and updating values
 
-## Prerequisites
+4. Run the application
+```bash
+npm run dev
+```
 
-- Node.js 16+
-- npm/yarn/pnpm
-- A Supabase account
-- Git
+## Usage
+1. Create an account or loginby visiting the login page at `/auth/login`
+2. Add your resolutions. You can set deadlines and reminders
+3. Track your progress by marking milestones
+4. View statistics in the dashboard
+5. Share achievements on social media
+6. view other users' resolutions and achievements
 
-## Getting Started
+## Contributing
+Pull requests are welcome! For major changes, please open an issue first to discuss changes.
 
-1. Create a Supabase project at [database.new](https://database.new)
-
-2. Clone the starter using your preferred package manager:
-
-   ```bash
-   npx create-next-app --example with-supabase with-supabase-app
-   # or
-   yarn create next-app --example with-supabase with-supabase-app
-   # or
-   pnpm create next-app --example with-supabase with-supabase-app
-   ```
-
-3. Navigate to project directory:
-   ```bash
-   cd with-supabase-app
-   ```
-
-4. Set up environment variables:
-   - Rename `.env.example` to `.env.local`
-   - Update with your Supabase credentials:
-   ```
-   NEXT_PUBLIC_SUPABASE_URL=[YOUR_SUPABASE_PROJECT_URL]
-   NEXT_PUBLIC_SUPABASE_ANON_KEY=[YOUR_SUPABASE_ANON_KEY]
-   ```
-
-5. Start the development server:
-   ```bash
-   npm run dev
-   ```
-
-Your app should now be running on [localhost:3000](http://localhost:3000/)
-
-## Deployment
-
-Deploy to Vercel with one click:
-
-[![Deploy with Vercel](https://vercel.com/button)](https://vercel.com/new/clone?repository-url=https%3A%2F%2Fgithub.com%2Fvercel%2Fnext.js%2Ftree%2Fcanary%2Fexamples%2Fwith-supabase&project-name=nextjs-with-supabase&repository-name=nextjs-with-supabase&demo-title=nextjs-with-supabase&demo-description=This+starter+configures+Supabase+Auth+to+use+cookies%2C+making+the+user%27s+session+available+throughout+the+entire+Next.js+app+-+Client+Components%2C+Server+Components%2C+Route+Handlers%2C+Server+Actions+and+Middleware.&demo-url=https%3A%2F%2Fdemo-nextjs-with-supabase.vercel.app%2F&external-id=https%3A%2F%2Fgithub.com%2Fvercel%2Fnext.js%2Ftree%2Fcanary%2Fexamples%2Fwith-supabase&demo-image=https%3A%2F%2Fdemo-nextjs-with-supabase.vercel.app%2Fopengraph-image.png)
-
-The deployment will automatically configure your environment variables through the Supabase integration.
-
-## Support
-
-For issues and feedback:
-- Open an issue on the [Supabase GitHub repo](https://github.com/supabase/supabase/issues/new/choose)
-- Join the [Supabase Discord](https://discord.supabase.com)
-- Check out the [documentation](https://supabase.com/docs)
-
-## Additional Resources
-
-- [Next.js Documentation](https://nextjs.org/docs)
-- [Supabase Documentation](https://supabase.com/docs)
-- [Tailwind CSS Documentation](https://tailwindcss.com/docs)
-- [shadcn/ui Documentation](https://ui.shadcn.com)
-
-## More Examples
-
-- [Next.js Subscription Payments Starter](https://github.com/vercel/nextjs-subscription-payments)
-- [Cookie-based Auth and the Next.js 13 App Router (free course)](https://youtube.com/playlist?list=PL5S4mPUpp4OtMhpnp93EFSo42iQ40XjbF)
-- [Supabase Auth and the Next.js App Router](https://github.com/supabase/supabase/tree/master/examples/auth/nextjs)
+## License
+[MIT](https://choosealicense.com/licenses/mit/)
