@@ -1,7 +1,17 @@
 "use client";
 import { createClient } from "@/utils/supabase/client";
 import React, { useState, useEffect } from "react";
-import { Card, CardContent, CardHeader, CardTitle } from "./ui/card";
+import {
+  Card,
+  CardContent,
+  CardFooter,
+  CardHeader,
+  CardTitle,
+} from "./ui/card";
+import { Button } from "./ui/button";
+import { Heart, MessageCircle, Share2, Star, Trophy } from "lucide-react";
+import { Progress } from "./ui/progress";
+import { Badge } from "./ui/badge";
 
 interface Resolution {
   id: string;
@@ -9,6 +19,10 @@ interface Resolution {
   user_id: string;
   description: string;
   likes: number;
+  category: string;
+  rating: number;
+  ratingCount: number;
+  progress: number;
 }
 
 interface Likes {
@@ -49,174 +63,145 @@ export default function StaticPage() {
     });
   }, []);
 
-  const handleRating = async (resolutionId: string, rating: number) => {
-    const supabase = createClient();
-    setUserRating(rating);
-
-    try {
-      // Save the user's rating
-      await supabase.from("ratings").insert({
-        resolution_id: resolutionId,
-        user_email: users[0]?.email,
-        rating: rating,
-      });
-
-      // Get all ratings for this resolution
-      const { data: ratingData, error } = await supabase
-        .from("ratings")
-        .select("rating")
-        .eq("resolution_id", resolutionId);
-
-      if (error) throw error;
-
-      // Calculate average rating
-      if (ratingData && ratingData.length > 0) {
-        const totalRating = ratingData.reduce(
-          (sum, curr) => sum + curr.rating,
-          0,
-        );
-        const averageRating = totalRating / ratingData.length;
-
-        // Update resolution with new average rating
-        await supabase
-          .from("resolution")
-          .update({ average_rating: averageRating })
-          .eq("id", resolutionId);
-      }
-    } catch (error) {
-      console.error("Error handling rating:", error);
-    }
+  const handleLike = (id: any) => {
+    setResolutions(
+      resolutions.map((resolution) => {
+        if (resolution.id === id) {
+          return {
+            ...resolution,
+            likes: resolution.likes
+              ? resolution.likes - 1
+              : resolution.likes + 1,
+            isLiked: !resolution.likes,
+          };
+        }
+        return resolution;
+      }),
+    );
   };
 
-  const handleLike = async (resolutionId: string) => {
-    const supabase = createClient();
+  const handleRate = (id: any, rating: any) => {
+    setResolutions(
+      resolutions.map((resolution) => {
+        if (resolution.id === id) {
+          const newRatingCount = resolution.ratingCount + 1;
+          const newRating =
+            (Number(resolution.rating) * resolution.ratingCount + rating) /
+            newRatingCount;
+          return {
+            ...resolution,
+            rating: newRating,
+            ratingCount: newRatingCount,
+          };
+        }
+        return resolution;
+      }),
+    );
+  };
 
-    // Check if user has already liked this resolution
-    const { data: existingLike } = await supabase
-      .from("likes")
-      .select("*")
-      .eq("resolution_id", resolutionId)
-      .eq("user_email", users[0]?.email)
-      .single();
-
-    if (existingLike) {
-      // Unlike - delete the like record
-      await supabase
-        .from("likes")
-        .delete()
-        .eq("resolution_id", resolutionId)
-        .eq("user_email", users[0]?.email);
-
-      setLikes((prev: Likes) => ({
-        ...prev,
-        [resolutionId]: false,
-      }));
-
-      try {
-        const { error } = await supabase
-          .from("resolution")
-          .update({
-            likes: resolutions.find((r) => r.id === resolutionId)!.likes - 1,
-          })
-          .eq("id", resolutionId);
-
-        if (error) throw error;
-
-        setResolutions((prevResolutions) =>
-          prevResolutions.map((res) =>
-            res.id === resolutionId
-              ? {
-                  ...res,
-                  likes: res.likes - 1,
-                }
-              : res,
-          ),
-        );
-      } catch (error) {
-        console.error("Error updating like:", error);
-      }
-    } else {
-      // Like - insert new like record
-      await supabase.from("likes").insert({
-        resolution_id: resolutionId,
-        user_email: users[0]?.email,
-      });
-
-      setLikes((prev: Likes) => ({
-        ...prev,
-        [resolutionId]: true,
-      }));
-
-      try {
-        const { error } = await supabase
-          .from("resolution")
-          .update({
-            likes: resolutions.find((r) => r.id === resolutionId)!.likes + 1,
-          })
-          .eq("id", resolutionId);
-
-        if (error) throw error;
-
-        setResolutions((prevResolutions) =>
-          prevResolutions.map((res) =>
-            res.id === resolutionId
-              ? {
-                  ...res,
-                  likes: res.likes + 1,
-                }
-              : res,
-          ),
-        );
-      } catch (error) {
-        console.error("Error updating like:", error);
-      }
-    }
+  const StarRating = ({ rating, onRate }: any) => {
+    return (
+      <div className="flex items-center gap-1">
+        {[1, 2, 3, 4, 5].map((star) => (
+          <button
+            key={star}
+            onClick={() => onRate(star)}
+            className="focus:outline-none"
+          >
+            <Star
+              className={`w-5 h-5 ${
+                star <= rating
+                  ? "fill-yellow-400 text-yellow-400"
+                  : "text-gray-300"
+              }`}
+            />
+          </button>
+        ))}
+      </div>
+    );
   };
 
   return (
-    <div className="resolutions-container flex flex-col gap-4 w-full">
-      {resolutions.map((resolution) => (
-        <Card key={resolution.id}>
-          <CardHeader>
-            <CardTitle>{resolution.name}</CardTitle>
-            {users.map((user: any) =>
-              user.id === resolution.user_id ? (
-                <p key={user.id}>Email: {user.email}</p>
-              ) : null,
-            )}
-          </CardHeader>
-          <CardContent>
-            <div key={resolution.id} className="resolution-card">
-              <p className="resolution-description">{resolution.description}</p>
+    <div className="max-w-3xl mx-auto p-6">
+      <h1 className="text-3xl font-bold mb-6 flex items-center gap-2">
+        <Trophy className="w-8 h-8 text-yellow-500" />
+        Community Resolutions
+      </h1>
 
-              <div className="resolution-interactions flex justify-between">
-                <div className="stars">
-                  {[1, 2, 3, 4, 5].map((star) => (
-                    <span
-                      key={star}
-                      onClick={() => handleRating(resolution.id, star)}
-                      className={`star cursor-pointer ${star <= userRating ? "active" : ""}`}
-                      role="button"
-                      tabIndex={0}
-                      aria-label={`Rate ${star} stars`}
-                    >
-                      ⭐
-                    </span>
-                  ))}
+      <div className="space-y-6">
+        {resolutions.map((resolution) => (
+          <Card key={resolution.id} className="overflow-hidden">
+            <CardHeader>
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-3 justify-center  ">
+                  {users.map((user: any) => {
+                    if (user.id === resolution.user_id) {
+                      return (
+                        <div key={user.id}>
+                          <img
+                            src={user.avatar}
+                            alt={user.name}
+                            className="w-8 h-8 rounded-full"
+                          />
+                          <span>{user.email}</span>
+                        </div>
+                      );
+                    }
+                  })}
+
+                  <div>
+                    <Badge variant="secondary">{resolution.category}</Badge>
+                  </div>
                 </div>
-
-                <button
-                  onClick={() => handleLike(resolution.id)}
-                  className={`like-button flex gap-4 text-blue-400 ${likes[resolution.id] ? "liked" : ""}`}
-                >
-                  {likes[resolution.id] ? "❤️" : "🤍"}
-                  <span>{resolution.likes}</span>
-                </button>
+                <div className="flex items-center gap-2">
+                  <span className="text-sm text-gray-500">
+                    {resolution.rating} ({resolution.ratingCount})
+                  </span>
+                  <StarRating
+                    rating={resolution.rating}
+                    onRate={(rating: any) => handleRate(resolution.id, rating)}
+                  />
+                </div>
               </div>
-            </div>
-          </CardContent>
-        </Card>
-      ))}
+            </CardHeader>
+            <CardContent>
+              <h2 className="text-xl font-semibold mb-2">{resolution.name}</h2>
+              <p className="text-gray-600 mb-4">{resolution.description}</p>
+
+              <div className="space-y-2">
+                <div className="flex justify-between text-sm text-gray-600">
+                  <span>Progress</span>
+                  <span>{resolution.progress}%</span>
+                </div>
+                <Progress value={resolution.progress} className="h-2" />
+              </div>
+            </CardContent>
+            <CardFooter className="border-t bg-gray-800">
+              <div className="flex items-center gap-4 w-full">
+                <Button
+                  variant="ghost"
+                  size="sm"
+                  onClick={() => handleLike(resolution.id)}
+                  className={`gap-2 ${resolution.likes ? "text-red-500" : ""}`}
+                >
+                  <Heart
+                    className={`w-4 h-4 ${resolution.likes ? "fill-current" : ""}`}
+                  />
+                  {resolution.likes}
+                </Button>
+                <Button variant="ghost" size="sm" className="gap-2">
+                  <MessageCircle className="w-4 h-4" />
+                  {/* {resolution.comments} */}
+                </Button>
+                <Button variant="ghost" size="sm" className="gap-2">
+                  <Share2 className="w-4 h-4" />
+                  Share
+                </Button>
+              </div>
+            </CardFooter>
+          </Card>
+        ))}
+      </div>
     </div>
   );
 }

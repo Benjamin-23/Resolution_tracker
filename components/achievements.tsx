@@ -119,7 +119,7 @@ export default function Achievement() {
             {[1, 2, 3].map((i) => (
               <div
                 key={i}
-                className="flex items-center gap-4 p-3 rounded-lg bg-gray-50"
+                className="flex items-center gap-4 p-3 rounded-lg bg-gray-800"
               >
                 <div className="w-12 h-12 rounded-full bg-blue-100 flex items-center justify-center">
                   <Trophy className="w-6 h-6 text-blue-500" />
