@@ -33,7 +33,7 @@ export default function Nav() {
           className="hover:text-green-500 hover:underline p-2 md:p-0"
           href="/protected"
         >
-          {isOpen ? "Resolution" : "Protected"}
+          {isOpen ? "Resolution" : "Resolution"}
         </Link>
         <Link
           className="hover:text-green-500 hover:underline p-2 md:p-0"

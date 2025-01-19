@@ -122,28 +122,30 @@ export default function StaticPage() {
   };
 
   return (
-    <div className="max-w-3xl mx-auto p-6">
-      <h1 className="text-3xl font-bold mb-6 flex items-center gap-2">
-        <Trophy className="w-8 h-8 text-yellow-500" />
+    <div className="max-w-3xl mx-auto p-4 sm:p-6">
+      <h1 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6 flex items-center gap-2">
+        <Trophy className="w-6 h-6 sm:w-8 sm:h-8 text-yellow-500" />
         Community Resolutions
       </h1>
 
-      <div className="space-y-6">
+      <div className="space-y-4 sm:space-y-6">
         {resolutions.map((resolution) => (
           <Card key={resolution.id} className="overflow-hidden">
             <CardHeader>
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-3 justify-center  ">
+              <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4 sm:gap-0">
+                <div className="flex items-center gap-3">
                   {users.map((user: any) => {
                     if (user.id === resolution.user_id) {
                       return (
-                        <div key={user.id}>
+                        <div key={user.id} className="flex items-center gap-2">
                           <img
                             src={user.avatar}
                             alt={user.name}
                             className="w-8 h-8 rounded-full"
                           />
-                          <span>{user.email}</span>
+                          <span className="text-sm sm:text-base">
+                            {user.email}
+                          </span>
                         </div>
                       );
                     }
@@ -165,8 +167,12 @@ export default function StaticPage() {
               </div>
             </CardHeader>
             <CardContent>
-              <h2 className="text-xl font-semibold mb-2">{resolution.name}</h2>
-              <p className="text-gray-600 mb-4">{resolution.description}</p>
+              <h2 className="text-lg sm:text-xl font-semibold mb-2">
+                {resolution.name}
+              </h2>
+              <p className="text-sm sm:text-base text-gray-600 mb-4">
+                {resolution.description}
+              </p>
 
               <div className="space-y-2">
                 <div className="flex justify-between text-sm text-gray-600">
@@ -177,23 +183,23 @@ export default function StaticPage() {
               </div>
             </CardContent>
             <CardFooter className="border-t bg-gray-800">
-              <div className="flex items-center gap-4 w-full">
+              <div className="flex items-center justify-between sm:justify-start sm:gap-4 w-full">
                 <Button
                   variant="ghost"
                   size="sm"
                   onClick={() => handleLike(resolution.id)}
-                  className={`gap-2 ${resolution.likes ? "text-red-500" : ""}`}
+                  className={`gap-1 sm:gap-2 ${resolution.likes ? "text-red-500" : ""}`}
                 >
                   <Heart
                     className={`w-4 h-4 ${resolution.likes ? "fill-current" : ""}`}
                   />
                   {resolution.likes}
                 </Button>
-                <Button variant="ghost" size="sm" className="gap-2">
+                <Button variant="ghost" size="sm" className="gap-1 sm:gap-2">
                   <MessageCircle className="w-4 h-4" />
                   {/* {resolution.comments} */}
                 </Button>
-                <Button variant="ghost" size="sm" className="gap-2">
+                <Button variant="ghost" size="sm" className="gap-1 sm:gap-2">
                   <Share2 className="w-4 h-4" />
                   Share
                 </Button>

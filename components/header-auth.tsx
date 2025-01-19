@@ -50,7 +50,7 @@ export default async function AuthButton() {
     );
   }
   return user ? (
-    <div className="flex items-center gap-4 justify-between w-full container">
+    <div className="flex items-center gap-4 justify-between w-screen">
       <Nav />
       <div className=" flex justify-between items-center gap-4">
         Hey, {user.email}
