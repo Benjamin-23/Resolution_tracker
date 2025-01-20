@@ -122,7 +122,7 @@ export default function StaticPage() {
   };
 
   return (
-    <div className="max-w-3xl mx-auto p-4 sm:p-6">
+    <div className="max-w-3xl mx-auto p-4 sm:p-6 h-screen my-6 ">
       <h1 className="text-2xl sm:text-3xl font-bold mb-4 sm:mb-6 flex items-center gap-2">
         <Trophy className="w-6 h-6 sm:w-8 sm:h-8 text-yellow-500" />
         Community Resolutions

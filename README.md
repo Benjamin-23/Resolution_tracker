@@ -18,7 +18,7 @@ Regular progress reports and success metrics help users stay informed about thei
 ## Installation
 1. Clone the repository
 ```bash
-git clone https://github.com/username/resolution-project.git
+https://github.com/Benjamin-23/Resolution_tracker.git
 ```
 
 2. Install dependencies
@@ -28,10 +28,15 @@ npm install
 ```
 
 3. Configure environment variables by copying `.env.example` to `.env` and updating values
-
+  ```bash
+SUPABASE_URL=YOUR_SUPABASE_URL
+SUPABASE_ANON_KEY=YOUR_SUPABASE_ANON_KEY
+NEXT_PUBLIC_SUPABASE_URL=YOUR_SUPABASE_URL
+NEXT_PUBLIC_SUPABASE_ANON_KEY=YOUR_SUPABASE_ANON_KEY
 4. Run the application
 ```bash
 npm run dev
+pnpm run dev
 ```
 
 ## Usage
