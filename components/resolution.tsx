@@ -7,13 +7,15 @@ import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { createClient } from "@/utils/supabase/client";
 import { Progress } from "./ui/progress";
+import { toast } from "@/hooks/use-toast";
+import { Toaster } from "./ui/toaster";
 export default function Resolution() {
   const supabase = createClient();
   const [resolutions, setResolutions] = useState<any[]>([]);
 
   const [newResolution, setNewResolution] = useState("");
   const [selectedCategory, setSelectedCategory] = useState("Personal Growth");
-
+  const [newDescription, setNewDescription] = useState("");
   const categories = [
     "Personal Growth",
     "Health",
@@ -38,14 +40,94 @@ export default function Resolution() {
       setResolutions(data);
     }
   };
+  // Helper function to check for repetitive patterns and return the repeated pattern
+  const findRepetitivePattern = (str: any) => {
+    if (!str) return null;
+
+    const text = str.toLowerCase();
+
+    // Check for repeating characters first
+    const repeatingCharsRegex = /(.)\1{3,}/;
+    const repeatingCharsMatch = text.match(repeatingCharsRegex);
+    if (repeatingCharsMatch) {
+      return {
+        pattern: repeatingCharsMatch[1],
+        type: "character",
+      };
+    }
+
+    // Check for repeating patterns
+    for (
+      let patternLength = 2;
+      patternLength <= Math.floor(text.length / 3);
+      patternLength++
+    ) {
+      for (let i = 0; i <= text.length - patternLength; i++) {
+        const pattern = text.slice(i, i + patternLength);
+        const regex = new RegExp(pattern, "g");
+        const matches = text.match(regex);
+        if (matches && matches.length >= 3) {
+          return {
+            pattern: pattern,
+            type: "pattern",
+          };
+        }
+      }
+    }
+
+    return null;
+  };
+
   const addResolution = async () => {
-    if (newResolution.trim()) {
+    const trimmedResolution = newResolution.trim();
+    const trimmedDescription = newDescription.trim();
+
+    if (!trimmedResolution || !trimmedDescription) {
+      toast({
+        title: "Error",
+        description: "Resolution and description are required",
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Check resolution for repetitive patterns
+    const resolutionRepetition = findRepetitivePattern(trimmedResolution);
+    if (resolutionRepetition) {
+      toast({
+        title: "Repetitive Content Detected",
+        description:
+          resolutionRepetition.type === "character"
+            ? `The character "${resolutionRepetition.pattern}" is repeated too many times in the resolution`
+            : `The pattern "${resolutionRepetition.pattern}" is repeated too many times in the resolution`,
+        variant: "destructive",
+      });
+      return;
+    }
+
+    // Check description for repetitive patterns
+    const descriptionRepetition = findRepetitivePattern(trimmedDescription);
+    if (descriptionRepetition) {
+      toast({
+        title: "Repetitive Content Detected",
+        description:
+          descriptionRepetition.type === "character"
+            ? `The character "${descriptionRepetition.pattern}" is repeated too many times in the description`
+            : `The pattern "${descriptionRepetition.pattern}" is repeated too many times in the description`,
+        variant: "destructive",
+      });
+      return;
+    }
+
+    try {
       const {
         data: { user },
       } = await supabase.auth.getUser();
-      await supabase.from("resolution").insert([
+
+      const { error } = await supabase.from("resolution").insert([
         {
-          name: newResolution,
+          name: trimmedResolution,
+          description: trimmedDescription,
           category: selectedCategory,
           progress: 0,
           likes: 0,
@@ -53,8 +135,24 @@ export default function Resolution() {
           user_id: user?.id,
         },
       ]);
+
+      if (error) throw error;
+
+      toast({
+        title: "Success!",
+        description: "Resolution created successfully",
+        variant: "default",
+      });
+
       fetchResolutions();
       setNewResolution("");
+      setNewDescription("");
+    } catch (error) {
+      toast({
+        title: "Error",
+        description: "Failed to create resolution",
+        variant: "destructive",
+      });
     }
   };
 
@@ -128,11 +226,13 @@ export default function Resolution() {
     } else {
       setResolutions(resolutions.filter((resolution) => resolution.id !== id));
     }
+    fetchResolutions();
   };
 
   return (
     <div>
       <div className="max-w-4xl mx-auto p-2 sm:p-6">
+        {/* <Toaster /> */}
         <Card className="mb-8">
           <CardHeader>
             <CardTitle className="flex items-center gap-2 text-base sm:text-lg md:text-xl">
@@ -147,6 +247,11 @@ export default function Resolution() {
                 onChange={(e) => setNewResolution(e.target.value)}
                 placeholder="Enter your resolution..."
                 className="flex-grow"
+              />
+              <Input
+                value={newDescription}
+                placeholder="Enter your resolution description..."
+                onChange={(e) => setNewDescription(e.target.value)}
               />
               <select
                 className="px-3 py-2 border rounded-md w-full sm:w-auto"
