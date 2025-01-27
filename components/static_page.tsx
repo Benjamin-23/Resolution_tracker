@@ -167,9 +167,7 @@ export default function StaticPage() {
               </div>
             </CardHeader>
             <CardContent>
-              <h2 className="text-lg  font-semibold mb-2 w-[50%]">
-                {resolution.name}
-              </h2>
+              <h2 className="text-lg  font-semibold mb-2">{resolution.name}</h2>
               <p className="text-sm sm:text-base mb-4 ">
                 {resolution.description}
               </p>
